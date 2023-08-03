@@ -32,12 +32,20 @@ To run this project, you will need to add the following environment variables:
 ## 🛠️ Run Locally
 
 1. Clone the project:
-    `git clone https://github.com/jaedync/ntsmonitor.git`
+    ```
+    git clone https://github.com/jaedync/ntsmonitor.git
+    ```
 2. Navigate to the project directory:
-    `cd ntsmonitor`
+    ```
+    cd ntsmonitor
+    ```
 3. Install dependencies:
-    `pip install -r requirements.txt`
-    `npm install`
+    ```
+    pip install -r requirements.txt
+    ```
+    ```
+    npm install
+    ```
 4. Set the environment variables:
     - On Unix systems: 
         ```bash
@@ -56,11 +64,17 @@ To run this project, you will need to add the following environment variables:
         set EXPECTED_API_KEY=your_value
         ```
 5. Start the server:
-    `python app.py`
+    ```
+    python app.py
+    ```
 6. In a new terminal window, navigate to the client directory:
-    `cd client`
+    ```
+    cd client
+    ```
 7. Start the client:
-    `npm start`
+    ```
+    npm start
+    ```
 
 ## 📚 Tech Stack
 
