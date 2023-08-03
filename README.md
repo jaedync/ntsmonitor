@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/jaedync/ntsmonitor/blob/main/public/logo512.png" alt="LETU Custom Logo" width="512" height="512">
+  <img src="https://github.com/jaedync/ntsmonitor/blob/main/public/wide.png" alt="LETU Custom Logo" width="95%">
 </p>
 
 <h1 align="center">LETU Network Services Status Monitor</h1>
