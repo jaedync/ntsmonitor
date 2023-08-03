@@ -31,22 +31,36 @@ To run this project, you will need to add the following environment variables:
 
 ## 🛠️ Run Locally
 
-1. Clone the project
-2. Install dependencies
-   ```
-   pip install -r requirements.txt
-   ```
-   ```
-   cd client && npm install
-   ```
-3. Start the server
-   ```
-   python server.py
-   ```
-4. Start the client
-   ```
-   cd client && npm start
-   ```
+1. Clone the project:
+    `git clone https://github.com/jaedync/ntsmonitor.git`
+2. Navigate to the project directory:
+    `cd ntsmonitor`
+3. Install dependencies:
+    `pip install -r requirements.txt`
+    `npm install`
+4. Set the environment variables:
+    - On Unix systems: 
+        ```bash
+        export MERAKI_ORG_ID=your_value
+        export MERAKI_API_KEY=your_value
+        export VERKADA_API_KEY=your_value
+        export VERKADA_ORG_ID=your_value
+        export EXPECTED_API_KEY=your_value
+        ```
+    - On Windows:
+        ```cmd
+        set MERAKI_ORG_ID=your_value
+        set MERAKI_API_KEY=your_value
+        set VERKADA_API_KEY=your_value
+        set VERKADA_ORG_ID=your_value
+        set EXPECTED_API_KEY=your_value
+        ```
+5. Start the server:
+    `python app.py`
+6. In a new terminal window, navigate to the client directory:
+    `cd client`
+7. Start the client:
+    `npm start`
 
 ## 📚 Tech Stack
 
