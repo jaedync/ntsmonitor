@@ -1,0 +1,4 @@
+node_modules/
+.env
+Dockerfile-backend
+Dockerfile-frontend
