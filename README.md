@@ -60,6 +60,10 @@ To run this project, you will need to add the following environment variables:
 - `/verkada_devices`: GET Verkada device status data
 - `/meraki_status`: GET Meraki device status data
 
+## Demo
+
+You can view a live demo of the application [here](https://nts.jaedynchilton.com). Please note that the demo site may not always be live.
+
 ## Authors
 
 - [@jaedynchilton](mailto:mail@jaedynchilton.com)
