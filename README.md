@@ -1,19 +1,25 @@
 
-# LETU Network Services Status Monitor
+<p align="center">
+  <img src="https://github.com/jaedync/ntsmonitor/blob/main/public/logo512.png" alt="LETU Custom Logo" width="512" height="512">
+</p>
 
-This is a status monitoring application built using Meraki API, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
+<h1 align="center">LETU Network Services Status Monitor</h1>
 
-## Features
+<p align="center">
+  This is a status monitoring application built using Meraki API, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
+</p>
 
-- Real-time status monitoring: The application updates the status of Meraki devices twice a minute, providing a near-real-time view of the network status.
-- Prioritization of offline devices: Offline devices are listed at the top for easy and quick identification.
-- Bandwidth Monitoring: The application provides total bandwidth usage statistics and a detailed usage chart.
-- Device and Manufacturer Analysis: The application provides information about top device models, top manufacturers, and top devices based on usage.
-- Traffic Analysis: The application provides detailed traffic analysis data.
-- Occupancy Monitoring: For Verkada cameras, the application provides detailed occupancy data.
-- Integration with Verkada Security: The application also monitors the status of Verkada security devices.
+## 🚀 Features
 
-## Environment Variables
+- 📈 **Real-time status monitoring:** The application updates the status of Meraki devices twice a minute, providing a near-real-time view of the network status.
+- 🎯 **Prioritization of offline devices:** Offline devices are listed at the top for easy and quick identification.
+- 💻 **Bandwidth Monitoring:** The application provides total bandwidth usage statistics and a detailed usage chart.
+- 📊 **Device and Manufacturer Analysis:** The application provides information about top device models, top manufacturers, and top devices based on usage.
+- 🌐 **Traffic Analysis:** The application provides detailed traffic analysis data.
+- 🏢 **Occupancy Monitoring:** For Verkada cameras, the application provides detailed occupancy data.
+- 🚨 **Integration with Verkada Security:** The application also monitors the status of Verkada security devices.
+
+## 🔧 Environment Variables
 
 To run this project, you will need to add the following environment variables:
 
@@ -23,7 +29,7 @@ To run this project, you will need to add the following environment variables:
 - `VERKADA_ORG_ID`
 - `EXPECTED_API_KEY`
 
-## Run Locally
+## 🛠️ Run Locally
 
 1. Clone the project
 2. Install dependencies
@@ -42,13 +48,13 @@ To run this project, you will need to add the following environment variables:
    cd client && npm start
    ```
 
-## Tech Stack
+## 📚 Tech Stack
 
 - **Client:** React
 - **Server:** Flask, Python
 - **External APIs:** Meraki, Verkada
 
-## API Reference
+## 📝 API Reference
 
 - `/top_manufacturers`: GET top manufacturers by usage
 - `/traffic_analysis`: GET traffic analysis data
@@ -60,19 +66,19 @@ To run this project, you will need to add the following environment variables:
 - `/verkada_devices`: GET Verkada device status data
 - `/meraki_status`: GET Meraki device status data
 
-## Demo
+## 🎥 Demo
 
 You can view a live demo of the application [here](https://nts.jaedynchilton.com). Please note that the demo site may not always be live.
 
-## Authors
+## ✍️ Authors
 
 - [@jaedynchilton](mailto:mail@jaedynchilton.com)
 
-## License
+## 📄 License
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-## Acknowledgements
+## 👏 Acknowledgements
 
 - [Meraki API](https://developer.cisco.com/meraki/)
 - [Verkada API](https://apidocs.verkada.com/)
