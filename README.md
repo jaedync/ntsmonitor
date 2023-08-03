@@ -82,4 +82,4 @@ You can view a live demo of the application [here](https://nts.jaedynchilton.com
 
 - [Meraki API](https://developer.cisco.com/meraki/)
 - [Verkada API](https://apidocs.verkada.com/)
-- [OpenAI's GPT-4](https://github.com/openai/gpt-4)
+- [OpenAI's GPT-4](https://github.com/jaedync/ntsmonitor/blob/main/static/dog-drinking-pepsi-pepsie.gif)
