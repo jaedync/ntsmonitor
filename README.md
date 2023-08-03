@@ -80,7 +80,7 @@ To run this project, you will need to add the following environment variables:
 
 - **Client:** React
 - **Server:** Flask, Python
-- **External APIs:** Meraki, Verkada
+- **Source APIs:** Meraki, Verkada
 
 ## 📝 API Reference
 
