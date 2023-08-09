@@ -345,14 +345,15 @@ def fetch_and_cache_verkada_occupancy():
                     }
                 elif response_trends.status_code == 429:
                     # Handle rate limiting
-                    print("Rate limited, waiting for {} seconds".format(backoff_time))
+                    print(f"Rate limited on camera {camera['camera_id']}, waiting for {backoff_time} seconds")
                     sleep(backoff_time)
                     backoff_time *= 2  # double the backoff time for the next iteration
                     continue
                 else:
-                    # print(f"Request failed for camera {camera['camera_id']} with status code {response_trends.status_code}")
+                    error_message = f"Request failed for camera {camera['camera_id']} with status code {response_trends.status_code}. Response text: {response_trends.text}"
+                    print(error_message)
                     time.sleep(5)
-                    raise Exception(f"Request failed for camera {camera['camera_id']} with status code {response_trends.status_code}")
+                    raise Exception(error_message)
 
             # Cache the cameras data
             cache.set('verkada_occupancy', cameras, timeout=300)
