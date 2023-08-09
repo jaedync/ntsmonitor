@@ -6,7 +6,7 @@
 <h1 align="center">LETU Network Services Status Monitor</h1>
 
 <p align="center">
-  This is a status monitoring application built using Meraki API, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
+  This is a status monitoring application built using Meraki and Verkada APIs, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
 </p>
 
 ## 🚀 Features
