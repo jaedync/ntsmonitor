@@ -17,6 +17,7 @@ import sys
 import termcolor
 import os
 from dotenv import load_dotenv
+from time import sleep
 
 load_dotenv()  # take environment variables from .env.
 
@@ -46,6 +47,7 @@ verkada_headers = {
 }
 
 def fetch_and_cache_verkada():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             query_params = {
@@ -57,6 +59,8 @@ def fetch_and_cache_verkada():
 
             # Only proceed if the response status code is 200
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
 
                 # Add productType key to each camera in the list
@@ -67,6 +71,12 @@ def fetch_and_cache_verkada():
                     camera['status'] = 'online' if camera['status'] == 'Live' else 'offline'
 
                 cache.set('verkada_devices', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Verkada API returned status code {response.status_code}")
         except Exception as e:
@@ -78,14 +88,23 @@ def fetch_and_cache_verkada():
             time.sleep(15)
 
 def fetch_and_cache_top_clients():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             top_clients_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/summary/top/clients/byUsage"
             params = {'timespan': 86400*7}
             response = requests.get(top_clients_url, headers=headers, params=params)
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_clients', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Request to get top clients by usage failed with status code {response.status_code}")
         except Exception as e:
@@ -97,16 +116,25 @@ def fetch_and_cache_top_clients():
             time.sleep(15)
 
 def fetch_and_cache_top_manufacturers():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             top_manufacturers_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/summary/top/clients/manufacturers/byUsage"
             params = {'timespan': 86400*7}
             response = requests.get(top_manufacturers_url, headers=headers, params=params)
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 # Remove manufacturers named "Others"
                 # data = [manufacturer for manufacturer in data if manufacturer['name'].lower() != 'other']
                 cache.set('top_manufacturers', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Request to get top manufacturers failed with status code {response.status_code}")
         except Exception as e:
@@ -118,14 +146,23 @@ def fetch_and_cache_top_manufacturers():
             time.sleep(15)
 
 def fetch_and_cache_top_devices():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             top_devices_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/summary/top/devices/byUsage"
             params = {'timespan': 86400*7}
             response = requests.get(top_devices_url, headers=headers, params=params)
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_devices', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Request to get top devices failed with status code {response.status_code}")
         except Exception as e:
@@ -137,13 +174,22 @@ def fetch_and_cache_top_devices():
             time.sleep(15)
 
 def fetch_and_cache_meraki_status():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             merakiStatusUrl = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/devices/statuses"
             response = requests.get(merakiStatusUrl, headers=headers)
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('devices_availabilities', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Meraki Status Request failed with status code {response.status_code}")
                 cache.set('devices_availabilities', None, timeout=300)  # set to None in case of error
@@ -156,12 +202,15 @@ def fetch_and_cache_meraki_status():
             time.sleep(15)
 
 def fetch_and_cache_bandwidth():
+    backoff_time = 1  # start with a 1-second backoff
     bandwidth_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/clients/bandwidthUsageHistory?timespan=604800"
     while True:
         try:
             response = requests.request('GET', bandwidth_url, headers=headers)
 
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 total_mbs = 0
                 upstream_mbps = defaultdict(list)
@@ -196,7 +245,12 @@ def fetch_and_cache_bandwidth():
                     'downstream_mbps': average_downstream_mbps,
                     'timestamp': average_timestamp
                 }, timeout=300)
-
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Meraki Bandwidth Request failed with status code {response.status_code}")
                 raise Exception(f"Error while Meraki Bandwidth data: {str(e)}")
@@ -210,14 +264,23 @@ def fetch_and_cache_bandwidth():
             time.sleep(15)
 
 def fetch_and_cache_top_models():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             top_models_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/summary/top/devices/models/byUsage"
             params = {'timespan': 86400*7}  # you can adjust this timespan as needed
             response = requests.get(top_models_url, headers=headers, params=params)
             if response.status_code == 200:
+                # Handle successful response
+                backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_models', data, timeout=300)
+            elif response.status_code == 429:
+                # Handle rate limiting
+                print("Rate limited, waiting for {} seconds".format(backoff_time))
+                sleep(backoff_time)
+                backoff_time *= 2  # double the backoff time for the next iteration
+                continue
             else:
                 print(f"Request to get top device models failed with status code {response.status_code}")
         except Exception as e:
@@ -229,6 +292,7 @@ def fetch_and_cache_top_models():
             time.sleep(15)
 
 def fetch_and_cache_verkada_occupancy():
+    backoff_time = 1  # start with a 1-second backoff
     while True:
         try:
             # Fetch the data from cache
@@ -257,6 +321,8 @@ def fetch_and_cache_verkada_occupancy():
                 response_trends = requests.get(url_trends, params=params_trends, headers=verkada_headers)
 
                 if response_trends.status_code == 200:
+                    # Handle successful response
+                    backoff_time = 1  # reset backoff time
                     occupancy_data = response_trends.json()
                     trend_in = occupancy_data['trend_in']
 
@@ -277,7 +343,12 @@ def fetch_and_cache_verkada_occupancy():
                         'timestamps': [timestamp.isoformat() for timestamp in daily_occupancy_counts.keys()],
                         'occupancy_counts': list(daily_occupancy_counts.values()),
                     }
-
+                elif response_trends.status_code == 429:
+                    # Handle rate limiting
+                    print("Rate limited, waiting for {} seconds".format(backoff_time))
+                    sleep(backoff_time)
+                    backoff_time *= 2  # double the backoff time for the next iteration
+                    continue
                 else:
                     # print(f"Request failed for camera {camera['camera_id']} with status code {response_trends.status_code}")
                     time.sleep(5)
@@ -297,22 +368,35 @@ def get_default_data():
     return {'sent': 0, 'recv': 0, 'activeTime': 0, 'flows': 0, 'numClients': 0}
 
 def fetch_and_cache_traffic_analysis():
+    backoff_time_networks = 1  # Backoff time for networks request
+    backoff_time_traffic = 1  # Backoff time for traffic request
+
     while True:
         try:
-            # Get the list of networks
-            networks_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/networks"
-            response_networks = requests.get(networks_url, headers=headers)
-
-            if response_networks.status_code != 200:
-                print(f"Networks API returned status code {response_networks.status_code}")
-                print(f"Response: {response_networks.text}")
-                continue
-
-            networks_data = response_networks.json()
-            network_ids = [network['id'] for network in networks_data]
-
             # Initialize an empty dictionary to store grouped data
             grouped_data = defaultdict(get_default_data)
+
+            # Get the list of networks with rate-limiting handling
+            while True:
+                networks_url = f"https://api.meraki.com/api/v1/organizations/{merakiOrgId}/networks"
+                response_networks = requests.get(networks_url, headers=headers)
+
+                if response_networks.status_code == 200:
+                    networks_data = response_networks.json()
+                    backoff_time_networks = 1  # Reset backoff time
+                    break
+                elif response_networks.status_code == 429:
+                    print(f"Rate limited on networks request, waiting for {backoff_time_networks} seconds")
+                    sleep(backoff_time_networks)
+                    backoff_time_networks *= 2
+                    continue
+                else:
+                    print(f"Networks API returned status code {response_networks.status_code}")
+                    # Handle other errors as needed
+                    sleep(5)
+                    continue
+
+            network_ids = [network['id'] for network in networks_data]
 
             # Fetch and process the traffic data for each network
             for network_id in network_ids:
@@ -320,25 +404,35 @@ def fetch_and_cache_traffic_analysis():
                 traffic_url = f"https://api.meraki.com/api/v1/networks/{network_id}/traffic"
 
                 # The parameters for the API request
-                params = {
-                    'timespan': 604800,  # 7 days in seconds
-                }
+                params = {'timespan': 604800}  # 7 days in seconds
 
-                # Make the API request
-                response_traffic = requests.get(traffic_url, headers=headers, params=params)
+                # Make the API request with rate-limiting handling
+                while True:
+                    response_traffic = requests.get(traffic_url, headers=headers, params=params)
 
-                # If the request is successful, process and add the data to the grouped data
-                if response_traffic.status_code == 200:
-                    traffic_data = response_traffic.json()
+                    if response_traffic.status_code == 200:
+                        traffic_data = response_traffic.json()
+                        backoff_time_traffic = 1  # Reset backoff time
+                        break
+                    elif response_traffic.status_code == 429:
+                        print(f"Rate limited on traffic request for network {network_id}, waiting for {backoff_time_traffic} seconds")
+                        sleep(backoff_time_traffic)
+                        backoff_time_traffic *= 2
+                        continue
+                    else:
+                        print(f"Traffic API returned status code {response_traffic.status_code}")
+                        # Handle other errors as needed
+                        sleep(5)
+                        continue
 
-                    # Group the data by application
+                # Group the data by application
                 for entry in traffic_data:
                     app = entry['application']
                     grouped_data[app]['sent'] += entry['sent']
                     grouped_data[app]['recv'] += entry['recv']
                     grouped_data[app]['activeTime'] += entry['activeTime']
                     grouped_data[app]['flows'] += entry['flows']
-                    grouped_data[app]['numClients'] += entry.get('numClients', 0)  # Default to 0 if numClients doesn't exist
+                    grouped_data[app]['numClients'] += entry.get('numClients', 0)
 
             # Cache the grouped data
             cache.set('traffic_analysis_data', grouped_data, timeout=300)
@@ -346,9 +440,9 @@ def fetch_and_cache_traffic_analysis():
         except Exception as e:
             print(f"Error while fetching Meraki Traffic Analysis data: {str(e)}")
             raise Exception(f"Error while fetching Meraki Traffic Analysis data: {str(e)}")
-
         finally:
-            time.sleep(15)
+            sleep(15)
+
 
 class FetchThread(Thread):
     def __init__(self, *args, **kwargs):
@@ -363,7 +457,7 @@ class FetchThread(Thread):
                 self.error_count += 1
                 print(f"Error in {self.name}: {str(e)}")
             finally:
-                time.sleep(5*self.error_count*self.error_count)  # Sleep for 5 seconds before the next loop iteration
+                time.sleep(5)  # Sleep for 5 seconds before the next loop iteration
 
 def monitor_threads(threads):
     while True:

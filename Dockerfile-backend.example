@@ -1,0 +1,23 @@
+# Dockerfile-backend
+FROM python:3.8-slim-buster
+
+WORKDIR /backend
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+COPY .env ./
+
+ENV MERAKI_API_KEY=YOUR_API_KEY
+ENV MERAKI_ORG_ID=YOUR_ORG_ID
+ENV VERKADA_API_KEY=YOUR_API_KEY
+ENV VERKADA_ORG_ID=YOUR_ORG_ID
+ENV EXPECTED_API_KEY=YOUR_CUSTOM_SUPER_SECRET_PASSWORD
+
+# CMD ["python", "App.py"]
+
+# Copy the start script and make it the entry point
+COPY start.sh /backend/start.sh
+CMD ["/bin/bash", "start.sh"]
