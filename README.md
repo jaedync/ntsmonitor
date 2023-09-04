@@ -9,6 +9,10 @@
   This is a status monitoring application built using Meraki and Verkada APIs, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jaedync/ntsmonitor/main/public/Capture.PNG" alt="Example Image" width="90%">
+</p>
+
 ## 🚀 Features
 
 - 📈 **Real-time status monitoring:** The application updates the status of Meraki devices twice a minute, providing a near-real-time view of the network status.
