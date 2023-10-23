@@ -17,38 +17,30 @@ function useBandwidth(apiKey) {
         return;
       }
 
-      let upstream_mbps = [];
-      let downstream_mbps = [];
-
-      const labels = Object.keys(data.upstream_mbps).map(timestamp => {
-        let date = new Date(timestamp);
-        let utcDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 
-                              date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
-        let cstOffset = date.getTimezoneOffset() === 300 ? 5 : 6;
-        let cstDate = new Date(utcDate - cstOffset * 3600 * 1000);
-
-        upstream_mbps.push(data.upstream_mbps[timestamp]);
-        downstream_mbps.push(data.downstream_mbps[timestamp]);
-
-        return cstDate.toISOString();
-      });
+      const labels = Object.keys(data.timestamp).sort();
+      const upstream_mbps = labels.map(timestamp => data.upstream_mbps[timestamp]);
+      const downstream_mbps = labels.map(timestamp => data.downstream_mbps[timestamp]);
 
       let chartBandwidthData = {
         labels: labels,
         datasets: [
           {
-            label: 'Down (Mbps)',
-            data: downstream_mbps,
-            fill: false,
-            backgroundColor: 'rgb(54, 162, 235)',
-            borderColor: 'rgba(54, 162, 235, 0.1)',
-          },
-          {
             label: 'Up (Mbps)',
             data: upstream_mbps,
-            fill: false,
-            backgroundColor: 'rgba(50, 195, 52)',
-            borderColor: 'rgba(50, 195, 52, 0.1)',
+            fill: true,
+            backgroundColor: 'rgba(50, 195, 52, 0.4)',
+            borderColor: 'rgba(50, 195, 52, 1)',
+            borderWidth: 4,
+            pointRadius: 1,
+          },
+          {
+            label: 'Down (Mbps)',
+            data: downstream_mbps,
+            fill: true,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 4,
+            pointRadius: 1,
           },
         ],
       };

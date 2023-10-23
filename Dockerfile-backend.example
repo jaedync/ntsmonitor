@@ -18,6 +18,5 @@ ENV EXPECTED_API_KEY=YOUR_CUSTOM_SUPER_SECRET_PASSWORD
 
 # CMD ["python", "App.py"]
 
-# Copy the start script and make it the entry point
-COPY start.sh /backend/start.sh
-CMD ["/bin/bash", "start.sh"]
+# Start Gunicorn
+exec gunicorn -b 0.0.0.0:8000 App:app

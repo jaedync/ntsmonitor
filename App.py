@@ -18,6 +18,7 @@ import termcolor
 import os
 from dotenv import load_dotenv
 from time import sleep
+import json
 
 load_dotenv()  # take environment variables from .env.
 
@@ -46,6 +47,25 @@ verkada_headers = {
     "x-api-key": verkadaApiKey,
 }
 
+def save_to_fallback_file(data, filename):
+    fallback_dir = "/app/fallbacks"  # Adjust the path as needed
+    file_path = f"{fallback_dir}/{filename}.json"
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(f"Failed to save fallback file: {e}")
+        
+def read_from_fallback_file(filename):
+    fallback_dir = "/app/fallbacks"  # Adjust the path as needed
+    file_path = f"{fallback_dir}/{filename}.json"
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Failed to read fallback file: {e}")
+        return None
+
 def fetch_and_cache_verkada():
     backoff_time = 1  # start with a 1-second backoff
     while True:
@@ -71,6 +91,7 @@ def fetch_and_cache_verkada():
                     camera['status'] = 'online' if camera['status'] == 'Live' else 'offline'
 
                 cache.set('verkada_devices', data, timeout=300)
+                save_to_fallback_file(data, 'verkada_devices_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -99,6 +120,7 @@ def fetch_and_cache_top_clients():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_clients', data, timeout=300)
+                save_to_fallback_file(data, 'top_clients_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -126,9 +148,8 @@ def fetch_and_cache_top_manufacturers():
                 # Handle successful response
                 backoff_time = 1  # reset backoff time
                 data = response.json()
-                # Remove manufacturers named "Others"
-                # data = [manufacturer for manufacturer in data if manufacturer['name'].lower() != 'other']
                 cache.set('top_manufacturers', data, timeout=300)
+                save_to_fallback_file(data, 'top_manufacturers_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -157,6 +178,7 @@ def fetch_and_cache_top_devices():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_devices', data, timeout=300)
+                save_to_fallback_file(data, 'top_devices_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -184,6 +206,7 @@ def fetch_and_cache_meraki_status():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('devices_availabilities', data, timeout=300)
+                save_to_fallback_file(data, 'devices_availabilities_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -218,13 +241,13 @@ def fetch_and_cache_bandwidth():
                 timestamps = defaultdict(list)
 
                 for i in range(len(data) - 1):
-                    ts1 = parse(data[i]['ts']).astimezone(pytz.UTC)
-                    ts2 = parse(data[i + 1]['ts']).astimezone(pytz.UTC)
+                    ts1 = data[i]['ts']
+                    ts2 = data[i + 1]['ts']
 
-                    time_diff = (ts2 - ts1).total_seconds()
+                    time_diff = (parse(ts2) - parse(ts1)).total_seconds()
                     mbs = (data[i]['total'] * time_diff) / 8
                     total_mbs += mbs
-                    hour_ts = ts1.replace(hour=(ts1.hour // 3) * 3, minute=0, second=0, microsecond=0)
+                    hour_ts = parse(ts1).replace(minute=0, second=0, microsecond=0)
 
                     hour_ts_str = hour_ts.strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -232,19 +255,24 @@ def fetch_and_cache_bandwidth():
                     if data[i]['upstream'] != 0 and data[i]['downstream'] != 0:
                         upstream_mbps[hour_ts_str].append(data[i]['upstream'])
                         downstream_mbps[hour_ts_str].append(data[i]['downstream'])
-                        timestamps[hour_ts_str].append(ts1)
+                        timestamps[hour_ts_str].append(parse(ts1))
 
                 # Now average the data and prepare for caching
                 average_upstream_mbps = {k: sum(v) / len(v) for k, v in upstream_mbps.items()}
                 average_downstream_mbps = {k: sum(v) / len(v) for k, v in downstream_mbps.items()}
                 average_timestamp = {k: (datetime.strptime(k, "%Y-%m-%dT%H:%M:%S") + timedelta(minutes=sum((ts.minute for ts in v)) / len(v))).strftime("%Y-%m-%dT%H:%M:%S") for k, v in timestamps.items()}
 
-                cache.set('bandwidth_data', {
+                # Now average the data and prepare for caching
+                bandwidth_data = {
                     'total_mbs': total_mbs,
                     'upstream_mbps': average_upstream_mbps,
                     'downstream_mbps': average_downstream_mbps,
                     'timestamp': average_timestamp
-                }, timeout=300)
+                }
+                
+                cache.set('bandwidth_data', bandwidth_data, timeout=300)
+                save_to_fallback_file(bandwidth_data, 'bandwidth_data_fallback')
+                
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -275,6 +303,7 @@ def fetch_and_cache_top_models():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_models', data, timeout=300)
+                save_to_fallback_file(data, 'top_models_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -357,6 +386,7 @@ def fetch_and_cache_verkada_occupancy():
 
             # Cache the cameras data
             cache.set('verkada_occupancy', cameras, timeout=300)
+            save_to_fallback_file(cameras, 'verkada_occupancy_fallback')
         except Exception as e:
             # print(f"Error while fetching Verkada data: {str(e)}")
             time.sleep(5)
@@ -437,6 +467,7 @@ def fetch_and_cache_traffic_analysis():
 
             # Cache the grouped data
             cache.set('traffic_analysis_data', grouped_data, timeout=300)
+            save_to_fallback_file(grouped_data, 'traffic_analysis_fallback')
 
         except Exception as e:
             print(f"Error while fetching Meraki Traffic Analysis data: {str(e)}")
@@ -501,7 +532,7 @@ monitor_thread.start()
 @app.route('/top_manufacturers')
 def get_top_manufacturers():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_manufacturers')
+    data = cache.get('top_manufacturers') or read_from_fallback_file('top_manufacturers_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Manufacturers data from cache'}), 500
     return jsonify(data)
@@ -509,7 +540,7 @@ def get_top_manufacturers():
 @app.route('/traffic_analysis')
 def get_traffic_analysis():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('traffic_analysis_data')
+    data = cache.get('traffic_analysis_data') or read_from_fallback_file('traffic_analysis_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch traffic analysis data from cache'}), 500
     return jsonify(data)
@@ -518,7 +549,7 @@ def get_traffic_analysis():
 @app.route('/bandwidth')
 def get_bandwidth():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('bandwidth_data')
+    data = cache.get('bandwidth_data') or read_from_fallback_file('bandwidth_data_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Bandwidth data from cache'}), 500
     return jsonify(data)
@@ -526,7 +557,7 @@ def get_bandwidth():
 @app.route('/verkada_occupancy')
 def get_verkada_occupancy():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('verkada_occupancy')
+    data = cache.get('verkada_occupancy') or read_from_fallback_file('verkada_occupancy_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Verkada occupancy data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -545,7 +576,7 @@ def get_verkada_occupancy():
 @app.route('/top_clients')
 def get_top_clients():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_clients')
+    data = cache.get('top_clients') or read_from_fallback_file('top_clients_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Clients data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -558,7 +589,7 @@ def get_top_clients():
 @app.route('/top_devices')
 def get_top_devices():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_devices')
+    data = cache.get('top_devices') or read_from_fallback_file('top_devices_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Devices data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -571,7 +602,7 @@ def get_top_devices():
 @app.route('/top_models')
 def get_top_models():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_models')
+    data = cache.get('top_models') or read_from_fallback_file('top_models_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Models data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -582,7 +613,7 @@ def get_top_models():
 @app.route('/verkada_devices')
 def get_verkada_devices():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('verkada_devices')
+    data = cache.get('verkada_devices') or read_from_fallback_file('verkada_devices_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Verkada Devices data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -606,7 +637,7 @@ def get_verkada_devices():
 @app.route('/meraki_status')
 def get_meraki_status():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('devices_availabilities')
+    data = cache.get('devices_availabilities') or read_from_fallback_file('devices_availabilities_fallback')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki status data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:

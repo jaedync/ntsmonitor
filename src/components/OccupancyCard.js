@@ -22,11 +22,16 @@ function OccupancyCard({ camera }) {
         }],
     };
 
+    const barOptions = {
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+      };
+
     return (
         <div className="faint-card">
             <h2>{camera.name}</h2>
             <div className="chart-container-line">
-                <Bar data={chartData} />
+          <Bar data={chartData} options={barOptions} />
             </div>
         </div>
     );

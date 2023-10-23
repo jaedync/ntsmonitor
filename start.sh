@@ -1,7 +1,6 @@
 #!/bin/bash
 
 while true; do
-    python App.py
-    echo "Waiting for 30 minutes until next restart..."
-    sleep 1800
+    timeout 1800 python App.py
+    echo "Restarting script after 30 minutes..."
 done
