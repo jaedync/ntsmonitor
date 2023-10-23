@@ -6,7 +6,11 @@
 <h1 align="center">LETU Network Services Status Monitor</h1>
 
 <p align="center">
-  This is a status monitoring application built using Meraki API, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
+  This is a status monitoring application built using Meraki and Verkada APIs, Flask for the backend, and React for the frontend. The application is designed to provide real-time status updates for Letourneau's cloud managed devices, which is especially useful in a network monitoring context. 
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jaedync/ntsmonitor/main/public/Capture.PNG" alt="Example Image" width="90%">
 </p>
 
 ## 🚀 Features
@@ -110,4 +114,4 @@ You can view a live demo of the application [here](https://nts.jaedynchilton.com
 
 - [Meraki API](https://developer.cisco.com/meraki/)
 - [Verkada API](https://apidocs.verkada.com/)
-- [OpenAI's GPT-4](https://github.com/jaedync/ntsmonitor/blob/main/static/dog-drinking-pepsi-pepsie.gif)
+- [OpenAI's GPT-4](https://github.com/jaedync/ntsmonitor/blob/main/static/stare-linkstare.gif)
