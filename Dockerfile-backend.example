@@ -18,5 +18,5 @@ ENV EXPECTED_API_KEY=YOUR_CUSTOM_SUPER_SECRET_PASSWORD
 
 # CMD ["python", "App.py"]
 
-# Start Gunicorn
-exec gunicorn -b 0.0.0.0:8000 App:app
+# Run Gunicorn when the container launches
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]

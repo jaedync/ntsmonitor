@@ -27,7 +27,7 @@ CORS(app)  # This will enable CORS for all routes
 
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # set up cache
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO) # set up logging
+logging.basicConfig(level=logging.INFO)  # Optional if Gunicorn is setting up logging
 
 merakiOrgId = os.getenv('MERAKI_ORG_ID')
 merakiApiKey = os.getenv('MERAKI_API_KEY')
@@ -53,8 +53,9 @@ def save_to_fallback_file(data, filename):
     try:
         with open(file_path, 'w') as f:
             json.dump(data, f)
+        logging.info(f"Successfully saved data to {file_path}")
     except Exception as e:
-        print(f"Failed to save fallback file: {e}")
+        logging.error(f"Failed to save fallback file: {e}")
         
 def read_from_fallback_file(filename):
     fallback_dir = "/app/fallbacks"  # Adjust the path as needed
@@ -91,7 +92,7 @@ def fetch_and_cache_verkada():
                     camera['status'] = 'online' if camera['status'] == 'Live' else 'offline'
 
                 cache.set('verkada_devices', data, timeout=300)
-                save_to_fallback_file(data, 'verkada_devices_fallback')
+                # save_to_fallback_file(data, 'verkada_devices_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -120,7 +121,7 @@ def fetch_and_cache_top_clients():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_clients', data, timeout=300)
-                save_to_fallback_file(data, 'top_clients_fallback')
+                # save_to_fallback_file(data, 'top_clients_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -149,7 +150,7 @@ def fetch_and_cache_top_manufacturers():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_manufacturers', data, timeout=300)
-                save_to_fallback_file(data, 'top_manufacturers_fallback')
+                # save_to_fallback_file(data, 'top_manufacturers_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -178,7 +179,7 @@ def fetch_and_cache_top_devices():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_devices', data, timeout=300)
-                save_to_fallback_file(data, 'top_devices_fallback')
+                # save_to_fallback_file(data, 'top_devices_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -206,7 +207,7 @@ def fetch_and_cache_meraki_status():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('devices_availabilities', data, timeout=300)
-                save_to_fallback_file(data, 'devices_availabilities_fallback')
+                # save_to_fallback_file(data, 'devices_availabilities_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -271,7 +272,7 @@ def fetch_and_cache_bandwidth():
                 }
                 
                 cache.set('bandwidth_data', bandwidth_data, timeout=300)
-                save_to_fallback_file(bandwidth_data, 'bandwidth_data_fallback')
+                # save_to_fallback_file(bandwidth_data, 'bandwidth_data_fallback')
                 
             elif response.status_code == 429:
                 # Handle rate limiting
@@ -303,7 +304,7 @@ def fetch_and_cache_top_models():
                 backoff_time = 1  # reset backoff time
                 data = response.json()
                 cache.set('top_models', data, timeout=300)
-                save_to_fallback_file(data, 'top_models_fallback')
+                # save_to_fallback_file(data, 'top_models_fallback')
             elif response.status_code == 429:
                 # Handle rate limiting
                 print("Rate limited, waiting for {} seconds".format(backoff_time))
@@ -386,7 +387,7 @@ def fetch_and_cache_verkada_occupancy():
 
             # Cache the cameras data
             cache.set('verkada_occupancy', cameras, timeout=300)
-            save_to_fallback_file(cameras, 'verkada_occupancy_fallback')
+            # save_to_fallback_file(cameras, 'verkada_occupancy_fallback')
         except Exception as e:
             # print(f"Error while fetching Verkada data: {str(e)}")
             time.sleep(5)
@@ -467,7 +468,7 @@ def fetch_and_cache_traffic_analysis():
 
             # Cache the grouped data
             cache.set('traffic_analysis_data', grouped_data, timeout=300)
-            save_to_fallback_file(grouped_data, 'traffic_analysis_fallback')
+            # save_to_fallback_file(grouped_data, 'traffic_analysis_fallback')
 
         except Exception as e:
             print(f"Error while fetching Meraki Traffic Analysis data: {str(e)}")
