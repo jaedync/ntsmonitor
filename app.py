@@ -533,7 +533,8 @@ monitor_thread.start()
 @app.route('/top_manufacturers')
 def get_top_manufacturers():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_manufacturers') or read_from_fallback_file('top_manufacturers_fallback')
+    # data = cache.get('top_manufacturers') or read_from_fallback_file('top_manufacturers_fallback')
+    data = cache.get('top_manufacturers')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Manufacturers data from cache'}), 500
     return jsonify(data)
@@ -541,7 +542,8 @@ def get_top_manufacturers():
 @app.route('/traffic_analysis')
 def get_traffic_analysis():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('traffic_analysis_data') or read_from_fallback_file('traffic_analysis_fallback')
+    # data = cache.get('traffic_analysis_data') or read_from_fallback_file('traffic_analysis_fallback')
+    data = cache.get('traffic_analysis_data')
     if data is None:
         return jsonify({'error': 'Failed to fetch traffic analysis data from cache'}), 500
     return jsonify(data)
@@ -550,7 +552,8 @@ def get_traffic_analysis():
 @app.route('/bandwidth')
 def get_bandwidth():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('bandwidth_data') or read_from_fallback_file('bandwidth_data_fallback')
+    # data = cache.get('bandwidth_data') or read_from_fallback_file('bandwidth_data_fallback')
+    data = cache.get('bandwidth_data')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Bandwidth data from cache'}), 500
     return jsonify(data)
@@ -558,7 +561,8 @@ def get_bandwidth():
 @app.route('/verkada_occupancy')
 def get_verkada_occupancy():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('verkada_occupancy') or read_from_fallback_file('verkada_occupancy_fallback')
+    # data = cache.get('verkada_occupancy') or read_from_fallback_file('verkada_occupancy_fallback')
+    data = cache.get('verkada_occupancy')
     if data is None:
         return jsonify({'error': 'Failed to fetch Verkada occupancy data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -577,7 +581,8 @@ def get_verkada_occupancy():
 @app.route('/top_clients')
 def get_top_clients():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_clients') or read_from_fallback_file('top_clients_fallback')
+    # data = cache.get('top_clients') or read_from_fallback_file('top_clients_fallback')
+    data = cache.get('top_clients')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Clients data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -590,7 +595,8 @@ def get_top_clients():
 @app.route('/top_devices')
 def get_top_devices():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_devices') or read_from_fallback_file('top_devices_fallback')
+    # data = cache.get('top_devices') or read_from_fallback_file('top_devices_fallback')
+    data = cache.get('top_devices')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Devices data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -603,7 +609,8 @@ def get_top_devices():
 @app.route('/top_models')
 def get_top_models():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('top_models') or read_from_fallback_file('top_models_fallback')
+    # data = cache.get('top_models') or read_from_fallback_file('top_models_fallback')
+    data = cache.get('top_models')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki Top Models data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -614,7 +621,8 @@ def get_top_models():
 @app.route('/verkada_devices')
 def get_verkada_devices():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('verkada_devices') or read_from_fallback_file('verkada_devices_fallback')
+    # data = cache.get('verkada_devices') or read_from_fallback_file('verkada_devices_fallback')
+    data = cache.get('verkada_devices')
     if data is None:
         return jsonify({'error': 'Failed to fetch Verkada Devices data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
@@ -638,7 +646,8 @@ def get_verkada_devices():
 @app.route('/meraki_status')
 def get_meraki_status():
     api_key = request.headers.get('Api-Key')
-    data = cache.get('devices_availabilities') or read_from_fallback_file('devices_availabilities_fallback')
+    # data = cache.get('devices_availabilities') or read_from_fallback_file('devices_availabilities_fallback')
+    data = cache.get('devices_availabilities')
     if data is None:
         return jsonify({'error': 'Failed to fetch Meraki status data from cache'}), 500
     if not api_key or api_key != EXPECTED_API_KEY:
