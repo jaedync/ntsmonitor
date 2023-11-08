@@ -101,7 +101,7 @@ function App() {
           <p>I created this status monitor using the Meraki API, a Flask backend, and a React frontend. It's simple, clean, and updates the status of our Meraki devices twice a minute. For added convenience, offline devices are listed at the top.</p>
           <p>Much better now!</p>
           <p className="author">- Jaedyn Chilton</p>
-          <h1 className="email-container"><a href="mailto:mail@jaedynchilton.com" className="email-link">mail@jaedynchilton.com</a></h1>
+          <h1 className="email-container"><a href="mailto:me@jaedynchilton.com" className="email-link">me@jaedynchilton.com</a></h1>
         </div>
         <div className="info-card">
           <ApiKeyInput setApiKey={setApiKey} />

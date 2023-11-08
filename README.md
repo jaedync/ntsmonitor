@@ -104,7 +104,7 @@ You can view a live demo of the application [here](https://nts.jaedynchilton.com
 
 ## ✍️ Authors
 
-- [@jaedynchilton](mailto:mail@jaedynchilton.com)
+- [me@jaedynchilton](mailto:me@jaedynchilton.com)
 
 ## 📄 License
 
