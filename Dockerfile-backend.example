@@ -16,7 +16,8 @@ ENV VERKADA_API_KEY=YOUR_API_KEY
 ENV VERKADA_ORG_ID=YOUR_ORG_ID
 ENV EXPECTED_API_KEY=YOUR_CUSTOM_SUPER_SECRET_PASSWORD
 
-# CMD ["python", "App.py"]
+# Ensure start.sh is executable
+RUN chmod +x start.sh
 
-# Run Gunicorn when the container launches
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+# Run start.sh when the container launches
+CMD ["./start.sh"]

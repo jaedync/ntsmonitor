@@ -54,6 +54,7 @@ def save_to_fallback_file(data, filename):
         with open(file_path, 'w') as f:
             json.dump(data, f)
         logging.info(f"Successfully saved data to {file_path}")
+        print(f"Successfully saved data to {file_path} print")
     except Exception as e:
         logging.error(f"Failed to save fallback file: {e}")
         
@@ -328,8 +329,10 @@ def fetch_and_cache_verkada_occupancy():
             # Fetch the data from cache
             data = cache.get('verkada_devices')
 
-            # Filter cameras with model "CD62"
-            cameras = [camera for camera in data['cameras'] if camera['model'] == 'CD62']
+            # Filter cameras with model "CD62" and "CM42"
+            cameras = [camera for camera in data['cameras'] if camera['model'] in ['CD62', 'CM42']]
+            # Sort the cameras by 'site' key
+            cameras.sort(key=lambda camera: camera['site'])
 
             # Calculate the epoch time for one week ago
             one_week_ago = datetime.now(pytz.timezone('CST6CDT')) - timedelta(weeks=1)
@@ -342,7 +345,7 @@ def fetch_and_cache_verkada_occupancy():
             params_trends = {
                 "org_id": verkadaOrgId,
                 "start_time": start_time,
-                "interval": "15_minutes",  # Change the interval to 15 minutes
+                "interval": "15_minutes",
             }
 
             # For each camera, get the occupancy data
@@ -363,7 +366,7 @@ def fetch_and_cache_verkada_occupancy():
                     # Accumulate the data into daily bins
                     daily_occupancy_counts = {}
                     for timestamp, count in zip(timestamps, occupancy_counts):
-                        date = timestamp.date()  # Get the date part of the timestamp
+                        date = timestamp.date()
                         if date not in daily_occupancy_counts:
                             daily_occupancy_counts[date] = 0
                         daily_occupancy_counts[date] += count
@@ -392,7 +395,6 @@ def fetch_and_cache_verkada_occupancy():
             # print(f"Error while fetching Verkada data: {str(e)}")
             time.sleep(5)
             raise Exception(f"Error while fetching Verkada Occupancy data: {str(e)}")
-            continue  # restart the loop if an error occurs
         finally:
             time.sleep(30)
 
@@ -663,12 +665,19 @@ def get_meraki_status():
             if 'network' in device and 'id' in device['network']:
                 device['network']['id'] = 'N/A'
 
+    # Calculate the date representing one month ago
+    three_months_ago = datetime.now(pytz.UTC) - timedelta(days=90)
+
     # Convert 'lastReportedAt' to a Unix timestamp and assign it to 'lastSeen'
+    # Also, change the status from 'dormant' to 'offline' if lastReportedAt is less than a month ago
     for device in data:
         if 'lastReportedAt' in device and device['lastReportedAt'] is not None:
             last_reported_at = parse(device['lastReportedAt']).astimezone(pytz.UTC)
             device['lastSeen'] = last_reported_at.timestamp()
 
+            # Check if the device is 'dormant' and 'lastReportedAt' is less than a month ago
+            if device.get('status') == 'dormant' and last_reported_at > three_months_ago:
+                device['status'] = 'offline'
 
     # Separate dormant and non-dormant devices
     dormant_devices = [device for device in data if device.get('status') == 'dormant']
